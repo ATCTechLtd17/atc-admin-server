@@ -2,7 +2,7 @@ import AppError from '../../Error/AppError';
 import { isPasswordMatched, User } from '../User/user.model';
 import { TAuth } from './auth.interface';
 import httpStatus from 'http-status';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { jwtHelpers } from '../../utils/JWTHelpers';
 import { config } from '../../config';
 import { JwtPayload, Secret } from 'jsonwebtoken';
