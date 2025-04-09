@@ -33,8 +33,29 @@ const getSingleDepartment = async (id: string) => {
   return department;
 };
 
+const updateDepartment = async (id: string, payload: Partial<IDepartment>) => {
+  const updatedDepartment = await Department.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+  if (!updatedDepartment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Department not found');
+  }
+  return updatedDepartment;
+};
+
+const deleteDepartment = async (id: string) => {
+  const deleted = await Department.findByIdAndDelete(id);
+  if (!deleted) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Department not found');
+  }
+  return deleted;
+};
+
 export const DepartmentServices = {
   createDepartment,
   getAllDepartment,
   getSingleDepartment,
+  updateDepartment,
+  deleteDepartment,
 };

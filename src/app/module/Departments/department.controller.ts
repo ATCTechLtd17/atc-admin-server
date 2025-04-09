@@ -35,8 +35,32 @@ const getSingleDepartment = CatchAsync(async (req, res) => {
   });
 });
 
+const updateDepartment = CatchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await DepartmentServices.updateDepartment(id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Department updated successfully',
+    data: result,
+  });
+});
+
+const deleteDepartment = CatchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await DepartmentServices.deleteDepartment(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Department deleted successfully',
+    data: result,
+  });
+});
+
 export const DepartmentController = {
   createDepartment,
   getAllDepartment,
   getSingleDepartment,
+  updateDepartment,
+  deleteDepartment,
 };

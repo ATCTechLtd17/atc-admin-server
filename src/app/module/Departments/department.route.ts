@@ -23,4 +23,16 @@ router.get(
   DepartmentController.getSingleDepartment,
 );
 
+router.patch(
+  '/:id',
+  auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
+  DepartmentController.updateDepartment,
+);
+
+router.delete(
+  '/:id',
+  auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
+  DepartmentController.deleteDepartment,
+);
+
 export const DepartmentRoutes = router;
