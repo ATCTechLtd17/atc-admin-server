@@ -4,6 +4,7 @@ import { DepartmentRoutes } from '../module/Departments/department.route';
 import { CategoryRoutes } from '../module/Categories/categories.route';
 import { SubCategoryRoutes } from '../module/SubCategories/subCategories.route';
 import { IncomeRoutes } from '../module/Income/income.route';
+import { ExpenseRoutes } from '../module/Expenses/expenses.route';
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: '/income',
     route: IncomeRoutes,
+  },
+  {
+    path: '/expense',
+    route: ExpenseRoutes,
   },
 ];
 
