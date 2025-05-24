@@ -5,6 +5,7 @@ import { CategoryRoutes } from '../module/Categories/categories.route';
 import { SubCategoryRoutes } from '../module/SubCategories/subCategories.route';
 import { IncomeRoutes } from '../module/Income/income.route';
 import { ExpenseRoutes } from '../module/Expenses/expenses.route';
+import { UserRoutes } from '../module/User/user.route';
 
 const router = Router();
 
@@ -12,6 +13,10 @@ const moduleRoutes = [
   {
     path: '/auth',
     route: AuthRoutes,
+  },
+  {
+    path: '/user',
+    route: UserRoutes,
   },
   {
     path: '/department',

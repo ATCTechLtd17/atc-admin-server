@@ -3,6 +3,11 @@ import { TIncome } from './income.interface';
 
 const incomeSchema = new Schema<TIncome>(
   {
+    id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     date: {
       type: String,
       required: true,
@@ -14,7 +19,6 @@ const incomeSchema = new Schema<TIncome>(
     },
     division: {
       type: String,
-      required: true,
     },
     organization: {
       type: String,
@@ -25,7 +29,6 @@ const incomeSchema = new Schema<TIncome>(
     subCategory: {
       type: Schema.Types.ObjectId,
       ref: 'SubCategory',
-      required: true,
     },
     contact: {
       type: String,
@@ -45,16 +48,28 @@ const incomeSchema = new Schema<TIncome>(
           type: String,
           required: true,
         },
-        unit: {
-          type: String,
-          required: true,
-        },
+        // unit: {
+        //   type: String,
+        //   required: true,
+        // },
         price: {
           type: Number,
           required: true,
         },
       },
     ],
+    tax: {
+      type: Number,
+      required: true,
+    },
+    vat: {
+      type: Number,
+      required: true,
+    },
+    discount: {
+      type: Number,
+      required: true,
+    },
     depositAmount: {
       type: Number,
       required: true,
@@ -73,6 +88,11 @@ const incomeSchema = new Schema<TIncome>(
     },
     dueAmount: {
       type: Number,
+      required: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['Partial Paid', 'Fully Paid'],
       required: true,
     },
   },

@@ -1,12 +1,12 @@
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
-import { USER_ROLE } from '../module/User/user.constant';
+import { UserRole } from '../module/User/user.constant';
 
 interface JwtPayload {
   id: string;
-  userName: string;
+  userId: string;
   email: string;
   contact: string;
-  role: keyof typeof USER_ROLE;
+  role: keyof typeof UserRole;
   profileImg?: string;
 }
 

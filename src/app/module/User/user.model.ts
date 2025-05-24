@@ -1,16 +1,11 @@
-import { Schema, model } from 'mongoose';
-import { TUser, UserModel } from './user.interface';
-import { USER_ROLE } from './user.constant';
+import { model, Schema } from 'mongoose';
+import { IUser, UserModel } from './user.interface';
 import bcrypt from 'bcryptjs';
 import { config } from '../../config';
 
-const userSchema = new Schema<TUser, UserModel>(
+const userSchema = new Schema<IUser, UserModel>(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    userName: {
+    userId: {
       type: String,
       required: true,
       unique: true,
@@ -19,39 +14,41 @@ const userSchema = new Schema<TUser, UserModel>(
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
+    },
+    contact: {
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
       type: String,
       required: true,
     },
-    gender: {
-      type: String,
-      enum: ['MALE', 'FEMALE'],
-      required: true,
-    },
-    role: {
-      type: String,
-      enum: Object.values(USER_ROLE),
-      required: true,
-    },
-    contact: {
-      type: String,
-      required: true,
-    },
-    address: {
-      type: String,
-    },
     profileImg: {
       type: String,
+      default: '',
+    },
+    needPasswordChange: {
+      type: Boolean,
+      default: true,
     },
     passwordChangedAt: {
       type: Date,
     },
+    role: {
+      type: String,
+      enum: ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'],
+      Required: true,
+    },
+    status: {
+      type: String,
+      enum: ['ACTIVE', 'INACTIVE'],
+      required: true,
+      default: 'ACTIVE',
+    },
     isDeleted: {
       type: Boolean,
       default: false,
-      required: true,
     },
   },
   {
@@ -100,4 +97,4 @@ userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
   return passwordChangedTime > jwtIssuedTimestamp;
 };
 
-export const User = model<TUser, UserModel>('User', userSchema);
+export const User = model<IUser, UserModel>('User', userSchema);

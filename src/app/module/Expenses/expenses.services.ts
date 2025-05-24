@@ -5,23 +5,45 @@ import { TExpenses } from './expenses.interface';
 import Expense from './expenses.model';
 import httpStatus from 'http-status';
 
+import { v4 as uuidv4 } from 'uuid';
+const generateMRIdFromUUID = () => {
+  const uuid = uuidv4();
+  const digits = uuid.replace(/\D/g, '').slice(0, 4);
+  return `MR-${digits}`;
+};
+
 const addExpense = async (payload: TExpenses) => {
-  const newExpense = await Expense.create(payload);
+  const id = generateMRIdFromUUID();
+  const newExpense = await Expense.create({ ...payload, id });
   return newExpense;
 };
 
 const getAllExpenses = async (query: Record<string, unknown>) => {
-  const { department, category, fromDate, toDate, ...restQuery } = query;
+  const {
+    department,
+    category,
+    fromDate,
+    toDate,
+    paymentStatus,
+    ...restQuery
+  } = query;
 
   const filter: Record<string, unknown> = {};
 
-  // Apply date range filter
-  (filter.date as any) = {};
-  if (fromDate) {
-    (filter.date as any).$gte = fromDate;
+  // Filter by date range
+  if (fromDate || toDate) {
+    (filter.date as any) = {};
+    if (fromDate) {
+      (filter.date as any).$gte = fromDate;
+    }
+    if (toDate) {
+      (filter.date as any).$lte = toDate;
+    }
   }
-  if (toDate) {
-    (filter.date as any).$lte = toDate;
+
+  // Filter by paymentStatus
+  if (paymentStatus) {
+    filter.paymentStatus = paymentStatus;
   }
 
   const expensesQuery = new QueryBuilder(
@@ -34,12 +56,12 @@ const getAllExpenses = async (query: Record<string, unknown>) => {
     }),
     restQuery,
   )
-    .search(['description', 'account'])
+    .search(['description', 'account', 'id'])
+    .filter()
     .sort()
     .paginate()
     .fields();
 
-  // After query is built
   let expenses = await expensesQuery.modelQuery;
 
   // Filter by department
