@@ -1,29 +1,69 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import QueryBuilder from '../../Builder/QueryBuilder';
 import AppError from '../../Error/AppError';
 import { TIncome } from './income.interface';
 import { Income } from './income.model';
 import httpStatus from 'http-status';
+import { v4 as uuidv4 } from 'uuid';
+const generateMRIdFromUUID = () => {
+  const uuid = uuidv4();
+  const digits = uuid.replace(/\D/g, '').slice(0, 4);
+  return `MR-${digits}`;
+};
 
 const addIncome = async (payload: TIncome) => {
-  const newIncome = await Income.create(payload);
+  const id = generateMRIdFromUUID();
+
+  const newIncome = await Income.create({
+    ...payload,
+    id,
+  });
+
   return newIncome;
 };
 
 const getAllIncome = async (query: Record<string, unknown>) => {
+  const { fromDate, toDate, division, paymentStatus, ...restQuery } = query;
+
+  const filter: Record<string, unknown> = {};
+
+  // Filter by date range
+  if (fromDate || toDate) {
+    (filter.date as any) = {};
+    if (fromDate) {
+      (filter.date as any).$gte = fromDate;
+    }
+    if (toDate) {
+      (filter.date as any).$lte = toDate;
+    }
+  }
+
+  // Filter by division
+  if (division) {
+    filter.division = division;
+  }
+
+  // Filter by paymentStatus
+  if (paymentStatus) {
+    filter.paymentStatus = paymentStatus;
+  }
+
   const incomesQuery = new QueryBuilder(
-    Income.find().populate({
+    Income.find(filter).populate({
       path: 'subCategory',
       populate: {
         path: 'category',
         populate: 'department',
       },
     }),
-    query,
+    restQuery,
   )
-    .search(['name'])
+    .search(['contact', 'email', 'id'])
+    .filter()
     .sort()
     .paginate()
     .fields();
+
   const result = await incomesQuery.modelQuery;
   const meta = await incomesQuery.countTotal();
   return {

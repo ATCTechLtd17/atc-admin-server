@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
 
 export type TExpenses = {
+  id: string;
   description: string;
   date: string;
   account: string;
@@ -12,4 +13,5 @@ export type TExpenses = {
   tds: number;
   totalAmount: number;
   paidAmount: number;
+  paymentStatus: 'Partial Paid' | 'Fully Paid';
 };

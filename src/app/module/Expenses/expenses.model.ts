@@ -2,6 +2,11 @@ import { Schema, model } from 'mongoose';
 import { TExpenses } from './expenses.interface';
 
 const expenseSchema = new Schema<TExpenses>({
+  id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   description: {
     type: String,
     required: true,
@@ -45,6 +50,11 @@ const expenseSchema = new Schema<TExpenses>({
   },
   paidAmount: {
     type: Number,
+    required: true,
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Partial Paid', 'Fully Paid'],
     required: true,
   },
 });

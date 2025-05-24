@@ -1,5 +1,13 @@
-export const USER_ROLE = {
-  SUPER_ADMIN: 'SUPER_ADMIN',
+export const UserRole = {
   ADMIN: 'ADMIN',
-  USER: 'USER',
+  SUPER_ADMIN: 'SUPER_ADMIN',
 } as const;
+
+export type TStatus = 'ACTIVE' | 'INACTIVE';
+
+export const adminSearchableFields = [
+  'fullName',
+  'email',
+  'contact',
+  'address',
+];

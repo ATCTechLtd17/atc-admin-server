@@ -1,22 +1,22 @@
 import { Model } from 'mongoose';
-import { USER_ROLE } from './user.constant';
+import { TStatus } from './user.constant';
 
-export type TUser = {
-  id?: string;
-  name: string;
-  userName: string;
+type TRole = 'ADMIN' | 'SUPER_ADMIN';
+
+export interface IUser {
+  userId: string;
   email: string;
-  password: string;
-  gender: 'MALE' | 'FEMALE';
-  role: keyof typeof USER_ROLE;
   contact: string;
-  address: string;
+  password: string;
   profileImg?: string;
-  isDeleted: boolean;
+  needPasswordChange: boolean;
   passwordChangedAt?: Date;
-};
+  role: TRole;
+  status: TStatus;
+  isDeleted: boolean;
+}
 
-export interface UserModel extends Model<TUser> {
+export interface UserModel extends Model<IUser> {
   isJWTIssuedBeforePasswordChanged(
     passwordChangedTimestamp: Date,
     jwtIssuedTimestamp: number,
