@@ -4,15 +4,15 @@ import { sendResponse } from '../../utils/sendResponse';
 import { AuthService } from './auth.services';
 import httpStatus from 'http-status';
 
-const signUpUser = CatchAsync(async (req, res) => {
-  const result = await AuthService.signUp(req.body);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'User created successfully',
-    data: result,
-  });
-});
+// const signUpUser = CatchAsync(async (req, res) => {
+//   const result = await AuthService.signUp(req.body);
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'User created successfully',
+//     data: result,
+//   });
+// });
 
 const loginUser = CatchAsync(async (req, res) => {
   const result = await AuthService.login(req.body);
@@ -57,6 +57,7 @@ const generateAccessTokeViaRefreshToken = CatchAsync(async (req, res) => {
 
 // const forgetPassword = CatchAsync(async (req, res) => {
 //   const { email } = req.body;
+
 //   const result = await AuthService.forgetPassword(email);
 //   sendResponse(res, {
 //     statusCode: httpStatus.OK,
@@ -66,23 +67,23 @@ const generateAccessTokeViaRefreshToken = CatchAsync(async (req, res) => {
 //   });
 // });
 
-// const resetPassword = CatchAsync(async (req, res) => {
-//   const token = req.headers.authorization;
+const resetPassword = CatchAsync(async (req, res) => {
+  const token = req.headers.authorization;
+  const { password } = req.body;
 
-//   const result = await AuthService.resetPassword(req.body, token as string);
-//   sendResponse(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'Password reset succesful!',
-//     data: result,
-//   });
-// });
+  const result = await AuthService.resetPassword(token as string, password);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password reset succesful!',
+    data: result,
+  });
+});
 
 export const AuthController = {
-  signUpUser,
   loginUser,
   changePassword,
   generateAccessTokeViaRefreshToken,
   // forgetPassword,
-  // resetPassword,
+  resetPassword,
 };
