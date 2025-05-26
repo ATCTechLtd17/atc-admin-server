@@ -24,13 +24,13 @@ router.get(
 );
 
 router.patch(
-  '/:id',
+  '/update-expense/:id',
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   ExpenseController.updateExpense,
 );
 
 router.delete(
-  '/:id',
+  '/delete-expense/:id',
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   ExpenseController.deleteExpense,
 );
