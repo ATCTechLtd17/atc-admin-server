@@ -17,15 +17,18 @@ const adminSchema = new Schema<IAdmin>(
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
     contact: {
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
 
     emergencyContact: {
       type: String,
+      trim: true,
     },
 
     profileImage: {
@@ -33,6 +36,7 @@ const adminSchema = new Schema<IAdmin>(
     },
     address: {
       type: String,
+      trim: true,
     },
     isDeleted: {
       type: Boolean,

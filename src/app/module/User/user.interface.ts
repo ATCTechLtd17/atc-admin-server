@@ -5,6 +5,7 @@ type TRole = 'ADMIN' | 'SUPER_ADMIN';
 
 export interface IUser {
   userId: string;
+  fullName?: string;
   email: string;
   contact: string;
   password: string;

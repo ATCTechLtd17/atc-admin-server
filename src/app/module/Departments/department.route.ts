@@ -1,37 +1,38 @@
 import { Router } from 'express';
 import auth from '../../middleware/auth';
-import { USER_ROLE } from '../User/user.constant';
+
 import { DepartmentController } from './department.controller';
+import { UserRole } from '../User/user.constant';
 
 const router = Router();
 
 router.post(
   '/create-department',
-  auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   DepartmentController.createDepartment,
 );
 
 router.get(
   '/',
-  auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   DepartmentController.getAllDepartment,
 );
 
 router.get(
   '/:id',
-  auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   DepartmentController.getSingleDepartment,
 );
 
 router.patch(
   '/:id',
-  auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   DepartmentController.updateDepartment,
 );
 
 router.delete(
   '/:id',
-  auth(USER_ROLE.SUPER_ADMIN, USER_ROLE.ADMIN),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   DepartmentController.deleteDepartment,
 );
 

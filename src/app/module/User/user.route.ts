@@ -22,7 +22,7 @@ router.get(
 
 router.post(
   '/create-admin',
-  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  auth(UserRole.SUPER_ADMIN),
   validateRequest(adminSchemaValidation),
   UserController.createAdminIntoDB,
 );
@@ -39,10 +39,6 @@ router.patch(
   UserController.updateUserProfile,
 );
 
-router.delete(
-  '/:id',
-  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  UserController.deleteUser,
-);
+router.delete('/:id', auth(UserRole.SUPER_ADMIN), UserController.deleteUser);
 
 export const UserRoutes = router;

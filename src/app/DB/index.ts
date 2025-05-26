@@ -1,12 +1,12 @@
 import { config } from '../config';
 import AppError from '../Error/AppError';
-
 import { SuperAdmin } from '../module/SuperAdmin/superAdmin.model';
 import { UserRole } from '../module/User/user.constant';
 import { User } from '../module/User/user.model';
 import httpStatus from 'http-status';
 
 const superAdminData = {
+  fullName: 'SuperAdmin',
   userId: config.SUPERADMIN.USERNAME,
   email: config.SUPERADMIN.EMAIL,
   contact: config.SUPERADMIN.CONTACT,
@@ -21,11 +21,12 @@ const adminData = {
   contact: config.SUPERADMIN.CONTACT,
 };
 
-export const seedSuperAdmin = async () => {
+export const seedingSuperAdmin = async () => {
   const session = await User.startSession();
-  session.startTransaction();
 
   try {
+    session.startTransaction();
+
     // Check if super admin exists using lean() for better performance
     const existingSuperAdmin = await User.findOne(
       { role: UserRole.SUPER_ADMIN },
@@ -48,9 +49,8 @@ export const seedSuperAdmin = async () => {
   } catch (error) {
     await session.abortTransaction();
     console.log('Error seeding super admin', error);
-
     throw new AppError(httpStatus.BAD_REQUEST, 'Error seeding super admin');
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };

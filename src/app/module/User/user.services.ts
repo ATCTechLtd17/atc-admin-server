@@ -41,6 +41,7 @@ const createAdmin = async (password: string, payload: IAdmin) => {
 
   //user-data
   userData.userId = userName;
+  userData.fullName = payload.fullName;
   userData.email = payload.email;
   userData.contact = payload.contact;
   userData.password = password;
