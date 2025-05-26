@@ -10,19 +10,26 @@ const userSchema = new Schema<IUser, UserModel>(
       required: true,
       unique: true,
     },
+    fullName: {
+      type: String,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
     contact: {
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
     password: {
       type: String,
       required: true,
+      trim: true,
     },
     profileImg: {
       type: String,

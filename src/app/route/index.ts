@@ -7,7 +7,7 @@ import { IncomeRoutes } from '../module/Income/income.route';
 import { ExpenseRoutes } from '../module/Expenses/expenses.route';
 import { UserRoutes } from '../module/User/user.route';
 
-const router = Router();
+const middleWareRouter = Router();
 
 const moduleRoutes = [
   {
@@ -40,6 +40,6 @@ const moduleRoutes = [
   },
 ];
 
-moduleRoutes.forEach((route) => router.use(route.path, route.route));
+moduleRoutes.forEach((route) => middleWareRouter.use(route.path, route.route));
 
-export default router;
+export const MiddlewareRoutes = middleWareRouter;

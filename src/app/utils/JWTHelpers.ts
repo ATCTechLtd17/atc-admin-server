@@ -3,6 +3,7 @@ import { UserRole } from '../module/User/user.constant';
 
 interface JwtPayload {
   id: string;
+  fullName?: string;
   userId: string;
   email: string;
   contact: string;

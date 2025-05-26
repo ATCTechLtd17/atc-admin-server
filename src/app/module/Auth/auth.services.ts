@@ -46,6 +46,7 @@ const login = async (payload: TAuth) => {
 
   const JwtPayload = {
     id: user._id,
+    fullName: user.fullName,
     email: user.email,
     userId: user.userId,
     contact: user.contact,
@@ -143,6 +144,7 @@ const refreshToken = async (token: string) => {
 
   const jwtPayload = {
     id: user._id,
+    fullName: user.fullName,
     email: user.email,
     userId: user.userId,
     contact: user.contact,
