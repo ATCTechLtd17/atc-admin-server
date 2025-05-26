@@ -24,13 +24,13 @@ router.get(
 );
 
 router.patch(
-  '/:id',
+  '/update-income/:id',
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   IncomeController.updateIncome,
 );
 
 router.delete(
-  '/:id',
+  '/delete-income/:id',
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   IncomeController.deleteIncome,
 );

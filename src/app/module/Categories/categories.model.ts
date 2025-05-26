@@ -9,7 +9,6 @@ const categoriesSchema = new Schema<ICategories>(
     },
     description: {
       type: String,
-      required: true,
     },
     department: {
       type: Schema.Types.ObjectId,
