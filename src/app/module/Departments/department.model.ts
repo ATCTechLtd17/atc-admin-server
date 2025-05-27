@@ -9,7 +9,6 @@ const departmentSchema = new Schema<IDepartment>(
     },
     description: {
       type: String,
-      required: true,
     },
   },
   {

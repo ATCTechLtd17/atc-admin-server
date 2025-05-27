@@ -15,7 +15,12 @@ const createSubCategory = async (payload: ISubCategories) => {
 
 const getAllSubCategories = async (query: Record<string, unknown>) => {
   const subCategoryQuery = new QueryBuilder(
-    SubCategory.find().populate('category'),
+    SubCategory.find().populate({
+      path: 'category',
+      populate: {
+        path: 'department',
+      },
+    }),
     query,
   )
     .sort()
