@@ -6,7 +6,7 @@ import { UserRole } from '../User/user.constant';
 const router = Router();
 
 router.post(
-  '/create-sub-category',
+  '/create',
   auth(...Object.values(UserRole)),
   SubCategoryController.createSubCategory,
 );
