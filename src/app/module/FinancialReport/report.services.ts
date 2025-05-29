@@ -45,13 +45,13 @@ const getFinancialReport = async (
     // Total income with date filter
     Income.aggregate([
       { $match: dateFilter },
-      { $group: { _id: null, total: { $sum: '$grossTotal' } } },
+      { $group: { _id: null, total: { $sum: '$payableAmount' } } },
     ]),
 
     // Total expense with date filter
     Expense.aggregate([
       { $match: dateFilter },
-      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+      { $group: { _id: null, total: { $sum: '$grossTotal' } } },
     ]),
 
     // Current month income
@@ -61,7 +61,7 @@ const getFinancialReport = async (
           date: { $gte: currentMonthStart, $lte: currentMonthEnd },
         },
       },
-      { $group: { _id: null, total: { $sum: '$grossTotal' } } },
+      { $group: { _id: null, total: { $sum: '$depositAmount' } } },
     ]),
 
     // Current month expense
@@ -71,7 +71,7 @@ const getFinancialReport = async (
           date: { $gte: currentMonthStart, $lte: currentMonthEnd },
         },
       },
-      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+      { $group: { _id: null, total: { $sum: '$paidAmount' } } },
     ]),
 
     // Last 12 months income for average calculation
@@ -81,7 +81,7 @@ const getFinancialReport = async (
           date: { $gte: twelveMonthsAgo, $lte: now },
         },
       },
-      { $group: { _id: null, total: { $sum: '$grossTotal' } } },
+      { $group: { _id: null, total: { $sum: '$depositAmount' } } },
     ]),
 
     // Last 12 months expense for average calculation
@@ -91,7 +91,7 @@ const getFinancialReport = async (
           date: { $gte: twelveMonthsAgo, $lte: now },
         },
       },
-      { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+      { $group: { _id: null, total: { $sum: '$paidAmount' } } },
     ]),
   ]);
 
@@ -157,7 +157,7 @@ const getExpensesByCategory = async (): Promise<TExpensesByCategoryReport> => {
           categoryId: '$categoryData._id',
           categoryName: '$categoryData.name',
         },
-        totalAmount: { $sum: '$totalAmount' },
+        paidAmount: { $sum: '$paidAmount' },
       },
     },
 
@@ -167,24 +167,24 @@ const getExpensesByCategory = async (): Promise<TExpensesByCategoryReport> => {
         _id: 0,
         categoryId: '$_id.categoryId',
         categoryName: '$_id.categoryName',
-        totalAmount: 1,
+        paidAmount: 1,
       },
     },
 
     // Sort by total amount (descending)
-    { $sort: { totalAmount: -1 } },
+    { $sort: { paidAmount: -1 } },
   ]);
 
   // Calculate total expenses across all categories
   const totalExpenses = expensesByCategory.reduce(
-    (sum, category) => sum + category.totalAmount,
+    (sum, category) => sum + category.paidAmount,
     0,
   );
 
   // Add percentage to each category
   const result = expensesByCategory.map((category) => ({
     ...category,
-    percentage: (category.totalAmount / totalExpenses) * 100,
+    percentage: (category.paidAmount / totalExpenses) * 100,
   }));
 
   return {

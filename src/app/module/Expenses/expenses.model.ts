@@ -1,63 +1,78 @@
 import { Schema, model } from 'mongoose';
 import { TExpenses } from './expenses.interface';
 
-const expenseSchema = new Schema<TExpenses>({
-  id: {
-    type: String,
-    required: true,
-    unique: true,
+const productSchema = new Schema(
+  {
+    productName: { type: String, required: true },
+    description: { type: String },
+    unitPrice: { type: Number, required: true },
+    quantity: { type: Number, required: true },
   },
-  description: {
-    type: String,
-    required: true,
+  { _id: false }, // prevent creating separate _id for each product
+);
+
+const expenseSchema = new Schema<TExpenses>(
+  {
+    id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    products: {
+      type: [productSchema],
+      required: true,
+    },
+    date: {
+      type: String,
+      required: true,
+    },
+    account: {
+      type: String,
+      required: true,
+    },
+    subCategory: {
+      type: Schema.Types.ObjectId,
+      ref: 'SubCategory',
+      required: true,
+    },
+    tax: {
+      type: Number,
+      required: true,
+    },
+    vat: {
+      type: Number,
+      required: true,
+    },
+    tds: {
+      type: Number,
+      required: true,
+    },
+    subTotal: {
+      type: Number,
+      required: true,
+    },
+    grossTotal: {
+      type: Number,
+      required: true,
+    },
+    paidAmount: {
+      type: Number,
+      required: true,
+    },
+    dueAmount: {
+      type: Number,
+      required: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['Partial Paid', 'Fully Paid'],
+      required: true,
+    },
   },
-  date: {
-    type: String,
-    required: true,
+  {
+    timestamps: true, // optional: adds createdAt and updatedAt
   },
-  account: {
-    type: String,
-    required: true,
-  },
-  subCategory: {
-    type: Schema.Types.ObjectId,
-    ref: 'SubCategory',
-    required: true,
-  },
-  unitPrice: {
-    type: Number,
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  tax: {
-    type: Number,
-    required: true,
-  },
-  vat: {
-    type: Number,
-    required: true,
-  },
-  tds: {
-    type: Number,
-    required: true,
-  },
-  totalAmount: {
-    type: Number,
-    required: true,
-  },
-  paidAmount: {
-    type: Number,
-    required: true,
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['Partial Paid', 'Fully Paid'],
-    required: true,
-  },
-});
+);
 
 const Expense = model<TExpenses>('Expense', expenseSchema);
 

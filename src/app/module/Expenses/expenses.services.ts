@@ -6,14 +6,14 @@ import Expense from './expenses.model';
 import httpStatus from 'http-status';
 
 import { v4 as uuidv4 } from 'uuid';
-const generateMRIdFromUUID = () => {
+const generateEXIdFromUUID = () => {
   const uuid = uuidv4();
   const digits = uuid.replace(/\D/g, '').slice(0, 4);
-  return `MR-${digits}`;
+  return `EX-${digits}`;
 };
 
 const addExpense = async (payload: TExpenses) => {
-  const id = generateMRIdFromUUID();
+  const id = generateEXIdFromUUID();
   const newExpense = await Expense.create({ ...payload, id });
   return newExpense;
 };
