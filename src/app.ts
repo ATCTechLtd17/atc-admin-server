@@ -12,7 +12,7 @@ const app: Application = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://atcadmin.atctechltd.com'],
     credentials: true,
   }),
 );
@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use('/api/v1', MiddlewareRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Welcome to taazafol server');
+  res.send('Welcome to atc-admin server');
 });
 
 app.use(
