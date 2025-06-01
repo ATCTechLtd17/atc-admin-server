@@ -1,19 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import QueryBuilder from '../../Builder/QueryBuilder';
 import AppError from '../../Error/AppError';
+import { generateCode } from '../../utils/codeGeneratorUtility';
 import { TExpenses } from './expenses.interface';
 import Expense from './expenses.model';
 import httpStatus from 'http-status';
 
-import { v4 as uuidv4 } from 'uuid';
-const generateEXIdFromUUID = () => {
-  const uuid = uuidv4();
-  const digits = uuid.replace(/\D/g, '').slice(0, 4);
-  return `EX-${digits}`;
-};
-
 const addExpense = async (payload: TExpenses) => {
-  const id = generateEXIdFromUUID();
+  const id = await generateCode(Expense, 'EX', 'id');
   const newExpense = await Expense.create({ ...payload, id });
   return newExpense;
 };

@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import QueryBuilder from '../../Builder/QueryBuilder';
 import AppError from '../../Error/AppError';
+import { generateCode } from '../../utils/codeGeneratorUtility';
 import { TIncome } from './income.interface';
 import { Income } from './income.model';
 import httpStatus from 'http-status';
-import { v4 as uuidv4 } from 'uuid';
-const generateMRIdFromUUID = () => {
-  const uuid = uuidv4();
-  const digits = uuid.replace(/\D/g, '').slice(0, 4);
-  return `MR-${digits}`;
-};
+
+// const generateMRIdFromUUID = () => {
+//   const uuid = uuidv4();
+//   const digits = uuid.replace(/\D/g, '').slice(0, 4);
+//   return `MR-${digits}`;
+// };
 
 const addIncome = async (payload: TIncome) => {
-  const id = generateMRIdFromUUID();
+  const id = await generateCode(Income, 'MR', 'id');
 
   const newIncome = await Income.create({
     ...payload,
