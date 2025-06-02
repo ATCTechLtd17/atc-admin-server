@@ -12,7 +12,11 @@ const app: Application = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://atcadmin.atctechltd.com'],
+    origin: [
+      'http://localhost:5173',
+      'https://atcadmin.atctechltd.com',
+      'http://192.168.10.102:5173',
+    ],
     credentials: true,
   }),
 );

@@ -20,7 +20,7 @@ const loginUser = CatchAsync(async (req, res) => {
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     sameSite: 'none',
-    domain: 'atcadmin.atctechltd.com',
+    // domain: 'atcadmin.atctechltd.com',
     secure: config.NODE_ENV === 'production',
   });
   sendResponse(res, {
