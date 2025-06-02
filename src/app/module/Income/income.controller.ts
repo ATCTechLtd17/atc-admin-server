@@ -34,6 +34,30 @@ const getSingleIncome = CatchAsync(async (req, res) => {
   });
 });
 
+const getIncomeByCustomId = CatchAsync(async (req, res) => {
+  const result = await IncomeServices.getIncomeByCustomId(req.params.customId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Income fetched successfully',
+    data: result,
+  });
+});
+
+// const downloadIncomePdf = CatchAsync(async (req, res) => {
+//   const result = await IncomeServices.generateIncomePdf(req.params.id);
+
+//   // Set headers for PDF download
+//   res.setHeader('Content-Type', 'application/pdf');
+//   res.setHeader(
+//     'Content-Disposition',
+//     `attachment; filename=ATC_Money_Receipt_${req.params.id}.pdf`,
+//   );
+
+//   // Send the PDF buffer
+//   res.send(result);
+// });
+
 const updateIncome = CatchAsync(async (req, res) => {
   const result = await IncomeServices.updateIncome(req.params.id, req.body);
   sendResponse(res, {
@@ -57,7 +81,9 @@ const deleteIncome = CatchAsync(async (req, res) => {
 export const IncomeController = {
   createIncome,
   getAllIncome,
+  getIncomeByCustomId,
   getSingleIncome,
   updateIncome,
   deleteIncome,
+  // downloadIncomePdf,
 };

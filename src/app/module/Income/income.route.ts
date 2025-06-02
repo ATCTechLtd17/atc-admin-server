@@ -23,6 +23,12 @@ router.get(
   IncomeController.getSingleIncome,
 );
 
+// New route for getting income by custom ID (public route for QR code access)
+router.get('/receipt/:customId', IncomeController.getIncomeByCustomId);
+
+// New route for downloading PDF by custom ID (public route for QR code access)
+// router.get('/download-pdf/:id', IncomeController.downloadIncomePdf);
+
 router.patch(
   '/update-income/:id',
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
