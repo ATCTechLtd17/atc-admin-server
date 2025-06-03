@@ -60,15 +60,12 @@ const incomeSchema = new Schema<TIncome>(
     ],
     tax: {
       type: Number,
-      required: true,
     },
     vat: {
       type: Number,
-      required: true,
     },
     discount: {
       type: Number,
-      required: true,
     },
     depositAmount: {
       type: Number,
