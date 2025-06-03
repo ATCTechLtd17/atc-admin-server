@@ -13,9 +13,9 @@ export type TExpenses = {
   date: string;
   account: string;
   subCategory: Types.ObjectId;
-  tax: number;
-  vat: number;
-  tds: number;
+  tax?: number;
+  vat?: number;
+  tds?: number;
   subTotal: number;
   grossTotal: number;
   paidAmount: number;

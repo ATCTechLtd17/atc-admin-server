@@ -97,14 +97,38 @@ const getSingleExpense = async (id: string) => {
   return expense;
 };
 
+// expense.service.ts
 const updateExpense = async (id: string, payload: Partial<TExpenses>) => {
-  const updatedExpense = await Expense.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  });
-  if (!updatedExpense) {
+  const existingExpense = await Expense.findById(id);
+  if (!existingExpense) {
     throw new AppError(httpStatus.NOT_FOUND, 'Expense not found');
   }
+
+  // Calculate new due amount
+  const newPaidAmount = payload.paidAmount || existingExpense.paidAmount;
+  const newDueAmount = existingExpense.grossTotal - newPaidAmount;
+
+  if (newPaidAmount > existingExpense.grossTotal) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Paid amount cannot be greater than gross total',
+    );
+  }
+
+  const updatedExpense = await Expense.findByIdAndUpdate(
+    id,
+    {
+      ...payload,
+      paidAmount: newPaidAmount,
+      dueAmount: newDueAmount,
+      paymentStatus: newDueAmount <= 0 ? 'Fully Paid' : 'Partial Paid',
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
   return updatedExpense;
 };
 

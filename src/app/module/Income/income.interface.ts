@@ -19,9 +19,9 @@ export type TIncome = {
     },
   ];
 
-  tax: number;
-  vat: number;
-  discount: number;
+  tax?: number;
+  vat?: number;
+  discount?: number;
   depositAmount: number;
   subTotal: number;
   grossTotal: number;

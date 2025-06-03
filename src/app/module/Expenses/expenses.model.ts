@@ -37,15 +37,12 @@ const expenseSchema = new Schema<TExpenses>(
     },
     tax: {
       type: Number,
-      required: true,
     },
     vat: {
       type: Number,
-      required: true,
     },
     tds: {
       type: Number,
-      required: true,
     },
     subTotal: {
       type: Number,
