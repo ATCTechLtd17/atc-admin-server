@@ -62,7 +62,7 @@ const expenseSchema = new Schema<TExpenses>(
     },
     paymentStatus: {
       type: String,
-      enum: ['Partial Paid', 'Fully Paid'],
+      enum: ['Partial Paid', 'Fully Paid', 'Unpaid'],
       required: true,
     },
   },
