@@ -318,21 +318,21 @@ const updateIncome = async (id: string, payload: Partial<TIncome>) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Income not found');
   }
 
-  const currentDueAmount =
-    payload.dueAmount !== undefined
-      ? payload.dueAmount
-      : existingIncome.dueAmount;
+  // const currentDueAmount =
+  //   payload.dueAmount !== undefined
+  //     ? payload.dueAmount
+  //     : existingIncome.dueAmount;
 
-  if (
-    currentDueAmount > 0 &&
-    payload.depositAmount &&
-    payload.depositAmount > currentDueAmount
-  ) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Deposit amount cannot be greater than due amount',
-    );
-  }
+  // if (
+  //   currentDueAmount > 0 &&
+  //   payload.depositAmount &&
+  //   payload.depositAmount > currentDueAmount
+  // ) {
+  //   throw new AppError(
+  //     httpStatus.BAD_REQUEST,
+  //     'Deposit amount cannot be greater than due amount',
+  //   );
+  // }
 
   const updatedIncome = await Income.findByIdAndUpdate(id, payload, {
     new: true,

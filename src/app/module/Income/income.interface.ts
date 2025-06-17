@@ -27,5 +27,5 @@ export type TIncome = {
   grossTotal: number;
   payableAmount: number;
   dueAmount: number;
-  paymentStatus: 'Partial Paid' | 'Fully Paid';
+  paymentStatus: 'Partial Paid' | 'Fully Paid' | 'Unpaid';
 };

@@ -89,7 +89,7 @@ const incomeSchema = new Schema<TIncome>(
     },
     paymentStatus: {
       type: String,
-      enum: ['Partial Paid', 'Fully Paid'],
+      enum: ['Partial Paid', 'Fully Paid', 'Unpaid'],
       required: true,
     },
   },
