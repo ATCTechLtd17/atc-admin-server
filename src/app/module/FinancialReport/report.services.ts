@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Expense from '../Expenses/expenses.model';
 import { Income } from '../Income/income.model';
 import {
@@ -13,7 +14,6 @@ const getFinancialReport = async (
   const { fromDate, toDate } = query;
 
   // Date filters for the main query
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const dateFilter: any = {};
   if (fromDate || toDate) {
     dateFilter.date = {};
@@ -25,7 +25,7 @@ const getFinancialReport = async (
     }
   }
 
-  // Current month date range (format as YYYY-MM-DD strings)
+  // Current month date range
   const currentMonthStart = format(startOfMonth(new Date()), 'yyyy-MM-dd');
   const currentMonthEnd = format(endOfMonth(new Date()), 'yyyy-MM-dd');
 
@@ -35,20 +35,28 @@ const getFinancialReport = async (
 
   // Fetch all data in parallel
   const [
-    totalIncome,
-    totalExpense,
+    totalIncomeResult,
+    totalExpenseResult,
     currentMonthIncome,
     currentMonthExpense,
     lastYearIncome,
     lastYearExpense,
+    fullyPaidIncomeResult,
+    partialPaidIncomeResult,
+    unpaidIncomeResult,
+    partialPaidIncomeDueResult,
+    fullyPaidExpenseResult,
+    partialPaidExpenseResult,
+    unpaidExpenseResult,
+    partialPaidExpenseDueResult,
   ] = await Promise.all([
-    // Total income with date filter
+    // Total income (sum of all payableAmount)
     Income.aggregate([
       { $match: dateFilter },
       { $group: { _id: null, total: { $sum: '$payableAmount' } } },
     ]),
 
-    // Total expense with date filter
+    // Total expense (sum of all grossTotal)
     Expense.aggregate([
       { $match: dateFilter },
       { $group: { _id: null, total: { $sum: '$grossTotal' } } },
@@ -93,12 +101,100 @@ const getFinancialReport = async (
       },
       { $group: { _id: null, total: { $sum: '$paidAmount' } } },
     ]),
+
+    // Fully Paid income (depositAmount)
+    Income.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Fully Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$depositAmount' } } },
+    ]),
+
+    // Partial Paid income (depositAmount)
+    Income.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$depositAmount' } } },
+    ]),
+
+    // Unpaid income (payableAmount)
+    Income.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Unpaid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$payableAmount' } } },
+    ]),
+
+    // Partial Paid income due amounts
+    Income.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$dueAmount' } } },
+    ]),
+
+    // Fully Paid expense (paidAmount)
+    Expense.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Fully Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$paidAmount' } } },
+    ]),
+
+    // Partial Paid expense (paidAmount)
+    Expense.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$paidAmount' } } },
+    ]),
+
+    // Unpaid expense (grossTotal)
+    Expense.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Unpaid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$grossTotal' } } },
+    ]),
+
+    // Partial Paid expense due amounts
+    Expense.aggregate([
+      {
+        $match: {
+          ...dateFilter,
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$dueAmount' } } },
+    ]),
   ]);
 
   // Calculate values
-  const incomeSum = totalIncome[0]?.total || 0;
-  const expenseSum = totalExpense[0]?.total || 0;
-  const profit = incomeSum - expenseSum;
+  const totalIncome = totalIncomeResult[0]?.total || 0;
+  const totalExpense = totalExpenseResult[0]?.total || 0;
+  const profit = totalIncome - totalExpense;
 
   const currentMonthIncomeSum = currentMonthIncome[0]?.total || 0;
   const currentMonthExpenseSum = currentMonthExpense[0]?.total || 0;
@@ -106,18 +202,40 @@ const getFinancialReport = async (
   const lastYearIncomeSum = lastYearIncome[0]?.total || 0;
   const lastYearExpenseSum = lastYearExpense[0]?.total || 0;
 
+  // Payment status breakdowns
+  const fullyPaidIncome = fullyPaidIncomeResult[0]?.total || 0;
+  const partialPaidIncome = partialPaidIncomeResult[0]?.total || 0;
+  const unpaidIncome = unpaidIncomeResult[0]?.total || 0;
+  const partialPaidIncomeDue = partialPaidIncomeDueResult[0]?.total || 0;
+
+  const fullyPaidExpense = fullyPaidExpenseResult[0]?.total || 0;
+  const partialPaidExpense = partialPaidExpenseResult[0]?.total || 0;
+  const unpaidExpense = unpaidExpenseResult[0]?.total || 0;
+  const partialPaidExpenseDue = partialPaidExpenseDueResult[0]?.total || 0;
+
+  // Calculate totals according to requirements
+  const totalPaidIncome = fullyPaidIncome + partialPaidIncome;
+  const totalUnpaidIncome = unpaidIncome + partialPaidIncomeDue;
+
+  const totalPaidExpense = fullyPaidExpense + partialPaidExpense;
+  const totalUnpaidExpense = unpaidExpense + partialPaidExpenseDue;
+
   // Calculate averages (monthly over last 12 months)
   const averageIncome = lastYearIncomeSum / 12;
   const averageExpense = lastYearExpenseSum / 12;
 
   const report: TFinancialReport = {
-    totalIncome: incomeSum,
-    totalExpense: expenseSum,
+    totalIncome,
+    totalExpense,
     profit,
     currentMonthIncome: currentMonthIncomeSum,
     currentMonthExpense: currentMonthExpenseSum,
     averageIncome,
     averageExpense,
+    totalPaidIncome,
+    totalUnpaidIncome,
+    totalPaidExpense: totalPaidExpense,
+    totalUnpaidExpense,
     ...(fromDate && { startDate: fromDate }),
     ...(toDate && { endDate: toDate }),
   };
