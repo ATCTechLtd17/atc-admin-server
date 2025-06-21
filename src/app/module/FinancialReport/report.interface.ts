@@ -6,6 +6,10 @@ export type TFinancialReport = {
   currentMonthExpense: number;
   averageIncome: number;
   averageExpense: number;
+  totalPaidIncome: number;
+  totalUnpaidIncome: number;
+  totalPaidExpense: number;
+  totalUnpaidExpense: number;
   startDate?: string;
   endDate?: string;
 };
