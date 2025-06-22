@@ -106,7 +106,7 @@ const updateExpense = async (id: string, payload: Partial<TExpenses>) => {
 
   // Calculate new due amount
   const newPaidAmount = payload.paidAmount || existingExpense.paidAmount;
-  const newDueAmount = existingExpense.grossTotal - newPaidAmount;
+  // const newDueAmount = existingExpense.grossTotal - newPaidAmount;
 
   if (newPaidAmount > existingExpense.grossTotal) {
     throw new AppError(
@@ -120,8 +120,7 @@ const updateExpense = async (id: string, payload: Partial<TExpenses>) => {
     {
       ...payload,
       paidAmount: newPaidAmount,
-      dueAmount: newDueAmount,
-      paymentStatus: newDueAmount <= 0 ? 'Fully Paid' : 'Partial Paid',
+      // paymentStatus: payload.dueAmount! <= 0 ? 'Fully Paid' : 'Partial Paid',
     },
     {
       new: true,

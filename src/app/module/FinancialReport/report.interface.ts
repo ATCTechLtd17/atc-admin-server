@@ -1,15 +1,32 @@
 export type TFinancialReport = {
+  // Overall totals
   totalIncome: number;
   totalExpense: number;
   profit: number;
-  currentMonthIncome: number;
-  currentMonthExpense: number;
+
+  // Current month totals
+  currentMonthTotalIncome: number;
+  currentMonthTotalExpense: number;
+  currentMonthProfit: number;
+
+  // Current month payment status breakdown
+  currentMonthPaidIncome: number;
+  currentMonthUnpaidIncome: number;
+  currentMonthPaidExpense: number;
+  currentMonthUnpaidExpense: number;
+
+  // Averages
   averageIncome: number;
   averageExpense: number;
+  averageProfit: number;
+
+  // Payment status breakdowns
   totalPaidIncome: number;
   totalUnpaidIncome: number;
   totalPaidExpense: number;
   totalUnpaidExpense: number;
+
+  // Date range
   startDate?: string;
   endDate?: string;
 };

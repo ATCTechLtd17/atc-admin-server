@@ -37,8 +37,8 @@ const getFinancialReport = async (
   const [
     totalIncomeResult,
     totalExpenseResult,
-    currentMonthIncome,
-    currentMonthExpense,
+    currentMonthTotalIncome,
+    currentMonthTotalExpense,
     lastYearIncome,
     lastYearExpense,
     fullyPaidIncomeResult,
@@ -49,6 +49,15 @@ const getFinancialReport = async (
     partialPaidExpenseResult,
     unpaidExpenseResult,
     partialPaidExpenseDueResult,
+    // Current month specific queries (renamed with cm prefix)
+    cmFullyPaidIncome,
+    cmPartialPaidIncome,
+    cmUnpaidIncome,
+    cmPartialPaidIncomeDue,
+    cmFullyPaidExpense,
+    cmPartialPaidExpense,
+    cmUnpaidExpense,
+    cmPartialPaidExpenseDue,
   ] = await Promise.all([
     // Total income (sum of all payableAmount)
     Income.aggregate([
@@ -62,24 +71,24 @@ const getFinancialReport = async (
       { $group: { _id: null, total: { $sum: '$grossTotal' } } },
     ]),
 
-    // Current month income
+    // Current month total income (payableAmount)
     Income.aggregate([
       {
         $match: {
           date: { $gte: currentMonthStart, $lte: currentMonthEnd },
         },
       },
-      { $group: { _id: null, total: { $sum: '$depositAmount' } } },
+      { $group: { _id: null, total: { $sum: '$payableAmount' } } },
     ]),
 
-    // Current month expense
+    // Current month total expense (grossTotal)
     Expense.aggregate([
       {
         $match: {
           date: { $gte: currentMonthStart, $lte: currentMonthEnd },
         },
       },
-      { $group: { _id: null, total: { $sum: '$paidAmount' } } },
+      { $group: { _id: null, total: { $sum: '$grossTotal' } } },
     ]),
 
     // Last 12 months income for average calculation
@@ -189,6 +198,94 @@ const getFinancialReport = async (
       },
       { $group: { _id: null, total: { $sum: '$dueAmount' } } },
     ]),
+
+    // Current month Fully Paid income
+    Income.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Fully Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$depositAmount' } } },
+    ]),
+
+    // Current month Partial Paid income
+    Income.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$depositAmount' } } },
+    ]),
+
+    // Current month Unpaid income
+    Income.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Unpaid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$payableAmount' } } },
+    ]),
+
+    // Current month Partial Paid income due amounts
+    Income.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$dueAmount' } } },
+    ]),
+
+    // Current month Fully Paid expense
+    Expense.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Fully Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$paidAmount' } } },
+    ]),
+
+    // Current month Partial Paid expense
+    Expense.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$paidAmount' } } },
+    ]),
+
+    // Current month Unpaid expense
+    Expense.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Unpaid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$grossTotal' } } },
+    ]),
+
+    // Current month Partial Paid expense due amounts
+    Expense.aggregate([
+      {
+        $match: {
+          date: { $gte: currentMonthStart, $lte: currentMonthEnd },
+          paymentStatus: 'Partial Paid',
+        },
+      },
+      { $group: { _id: null, total: { $sum: '$dueAmount' } } },
+    ]),
   ]);
 
   // Calculate values
@@ -196,11 +293,14 @@ const getFinancialReport = async (
   const totalExpense = totalExpenseResult[0]?.total || 0;
   const profit = totalIncome - totalExpense;
 
-  const currentMonthIncomeSum = currentMonthIncome[0]?.total || 0;
-  const currentMonthExpenseSum = currentMonthExpense[0]?.total || 0;
+  const currentMonthTotalIncomeSum = currentMonthTotalIncome[0]?.total || 0;
+  const currentMonthTotalExpenseSum = currentMonthTotalExpense[0]?.total || 0;
+  const currentMonthProfit =
+    currentMonthTotalIncomeSum - currentMonthTotalExpenseSum;
 
   const lastYearIncomeSum = lastYearIncome[0]?.total || 0;
   const lastYearExpenseSum = lastYearExpense[0]?.total || 0;
+  const lastYearProfit = lastYearIncomeSum - lastYearExpenseSum;
 
   // Payment status breakdowns
   const fullyPaidIncome = fullyPaidIncomeResult[0]?.total || 0;
@@ -213,6 +313,19 @@ const getFinancialReport = async (
   const unpaidExpense = unpaidExpenseResult[0]?.total || 0;
   const partialPaidExpenseDue = partialPaidExpenseDueResult[0]?.total || 0;
 
+  // Current month payment status breakdowns
+  const currentMonthFullyPaidIncome = cmFullyPaidIncome[0]?.total || 0;
+  const currentMonthPartialPaidIncome = cmPartialPaidIncome[0]?.total || 0;
+  const currentMonthUnpaidIncome = cmUnpaidIncome[0]?.total || 0;
+  const currentMonthPartialPaidIncomeDue =
+    cmPartialPaidIncomeDue[0]?.total || 0;
+
+  const currentMonthFullyPaidExpense = cmFullyPaidExpense[0]?.total || 0;
+  const currentMonthPartialPaidExpense = cmPartialPaidExpense[0]?.total || 0;
+  const currentMonthUnpaidExpense = cmUnpaidExpense[0]?.total || 0;
+  const currentMonthPartialPaidExpenseDue =
+    cmPartialPaidExpenseDue[0]?.total || 0;
+
   // Calculate totals according to requirements
   const totalPaidIncome = fullyPaidIncome + partialPaidIncome;
   const totalUnpaidIncome = unpaidIncome + partialPaidIncomeDue;
@@ -220,21 +333,39 @@ const getFinancialReport = async (
   const totalPaidExpense = fullyPaidExpense + partialPaidExpense;
   const totalUnpaidExpense = unpaidExpense + partialPaidExpenseDue;
 
+  // Calculate current month totals
+  const currentMonthPaidIncome =
+    currentMonthFullyPaidIncome + currentMonthPartialPaidIncome;
+  const currentMonthUnpaidIncomeTotal =
+    currentMonthUnpaidIncome + currentMonthPartialPaidIncomeDue;
+
+  const currentMonthPaidExpense =
+    currentMonthFullyPaidExpense + currentMonthPartialPaidExpense;
+  const currentMonthUnpaidExpenseTotal =
+    currentMonthUnpaidExpense + currentMonthPartialPaidExpenseDue;
+
   // Calculate averages (monthly over last 12 months)
   const averageIncome = lastYearIncomeSum / 12;
   const averageExpense = lastYearExpenseSum / 12;
+  const averageProfit = lastYearProfit / 12;
 
   const report: TFinancialReport = {
     totalIncome,
     totalExpense,
     profit,
-    currentMonthIncome: currentMonthIncomeSum,
-    currentMonthExpense: currentMonthExpenseSum,
+    currentMonthTotalIncome: currentMonthTotalIncomeSum,
+    currentMonthTotalExpense: currentMonthTotalExpenseSum,
+    currentMonthProfit,
+    currentMonthPaidIncome,
+    currentMonthUnpaidIncome: currentMonthUnpaidIncomeTotal,
+    currentMonthPaidExpense,
+    currentMonthUnpaidExpense: currentMonthUnpaidExpenseTotal,
     averageIncome,
     averageExpense,
+    averageProfit,
     totalPaidIncome,
     totalUnpaidIncome,
-    totalPaidExpense: totalPaidExpense,
+    totalPaidExpense,
     totalUnpaidExpense,
     ...(fromDate && { startDate: fromDate }),
     ...(toDate && { endDate: toDate }),
